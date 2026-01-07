@@ -23,8 +23,11 @@
     "react-dom": ">=18"
   },
   "scripts": {
-    "types": "tsc --emitDeclarationOnly",
-    "build": "bun build ./src/index.ts --outdir dist --target browser --minify --external react --external react-dom && bun run types"
+    "clean": "rm -rf dist",
+    "types": "tsc",
+    "build": "bun run clean && bun build ./src/index.ts --outdir dist --target browser --minify --external react --external react-dom && bun run types",
+    "test": "bun test",
+    "prepublishOnly": "bun run test && bun run build"
   },
   "license": "MIT",
   "keywords": [
