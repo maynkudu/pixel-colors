@@ -17,17 +17,22 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install Dependencies
-        run: bun install && cd example && bun install
+      - name: Install Root Dependencies
+        run: bun install
 
       - name: Build Library
         run: bun run build
 
+      - name: Install Example Dependencies
+        run: cd example && bun install
+
       - name: Build Example
-        run: cd example && bun run build
+        run: |
+          cd example
+          bun run build
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: example/dist # The folder the action should deploy.
+          folder: example/dist
           branch: gh-pages
