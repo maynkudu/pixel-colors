@@ -1,9 +1,9 @@
-# pixelpalette
+# pixel-colors
 
 A high-performance, deterministic color extraction library for React. Use K-Means clustering to find dominant color palettes from any image with zero external dependencies.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Bundle Size](https://img.shields.io/bundlephobia/minzip/pixelpalette)
+![Bundle Size](https://img.shields.io/bundlephobia/minzip/pixel-colors)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)
 
 ---
@@ -56,7 +56,7 @@ function ProfileCard({ userImage }) {
 You can use the core extraction logic without React:
 
 ```ts
-import { extractColors } from "pixelpalette";
+import { extractColors } from "pixel-colors";
 
 const img = document.getElementById("my-image") as HTMLImageElement;
 const colors = extractColors(img, 6);
