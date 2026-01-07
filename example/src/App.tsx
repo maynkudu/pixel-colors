@@ -1,230 +1,238 @@
 import { useState } from "react";
-import { usePixelColors } from "pixel-colors";
+import { usePixelColors, getContrastText } from "pixel-colors";
 
 export default function App() {
   const [image, setImage] = useState<string>(
-    "https://picsum.photos/seed/nature/1200/800",
+    "https://picsum.photos/seed/office/1200/800",
   );
-  const { palette, loading, error } = usePixelColors(image, 1);
+  const [count, setCount] = useState<number>(6);
+  const { palette, loading, error } = usePixelColors(image, count);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
+    if (file) setImage(URL.createObjectURL(file));
+  };
+
+  const downloadCSS = () => {
+    const css = `:root {\n${palette.map((c, i) => `  --color-${i + 1}: ${c};`).join("\n")}\n}`;
+    const blob = new Blob([css], { type: "text/css" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "variables.css";
+    a.click();
   };
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>🎨 Pixel Colors</h1>
-        <p style={styles.subtitle}>Professional color extraction playground</p>
-      </header>
+      <div style={styles.wrapper}>
+        {/* Header */}
+        <header style={styles.header}>
+          <h1 style={styles.title}>Pixel Colors</h1>
+          <p style={styles.subtitle}>Extract aesthetic palettes from images.</p>
+        </header>
 
-      <main style={styles.main}>
-        {/* Upload Section */}
-        <section style={styles.uploadSection}>
-          <label style={styles.uploadLabel}>
-            Choose an image
+        {/* Toolbar */}
+        <div style={styles.toolbar}>
+          <div style={styles.controlGroup}>
+            <label style={styles.label}>Colors: {count}</label>
             <input
-              type="file"
-              onChange={handleUpload}
-              accept="image/*"
-              style={styles.hiddenInput}
+              type="range"
+              min="1"
+              max="12"
+              value={count}
+              onChange={(e) => setCount(parseInt(e.target.value))}
+              style={styles.range}
             />
-          </label>
-          <span style={styles.uploadNote}>PNG, JPG, or WEBP supported</span>
-        </section>
-
-        <div style={styles.grid}>
-          {/* Image Card */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>Source Image</div>
-            <div style={styles.imageWrapper}>
-              <img src={image} style={styles.image} alt="Test" />
-            </div>
           </div>
 
-          {/* Palette Card */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>Extracted Palette</div>
-            <div style={styles.paletteContent}>
-              {loading && <div style={styles.status}>Analyzing image...</div>}
-              {error && <div style={styles.error}>{error}</div>}
-              {!loading && !error && (
-                <div style={styles.list}>
-                  {palette.map((color: string, i: number) => (
-                    <div key={i} style={styles.row}>
-                      <div
-                        style={{
-                          ...styles.swatch,
-                          backgroundColor: color,
-                        }}
-                      />
-                      <div style={styles.colorInfo}>
-                        <code style={styles.code}>{color.toUpperCase()}</code>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(color)}
-                          style={styles.copyBtn}
-                        >
-                          Copy
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div style={styles.actionGroup}>
+            <label style={styles.secondaryBtn}>
+              Upload Image
+              <input
+                type="file"
+                onChange={handleUpload}
+                accept="image/*"
+                style={{ display: "none" }}
+              />
+            </label>
+            <button
+              onClick={downloadCSS}
+              style={styles.primaryBtn}
+              disabled={palette.length === 0}
+            >
+              Export CSS
+            </button>
           </div>
         </div>
-      </main>
+
+        {/* Main Content */}
+        <div style={styles.content}>
+          {/* Image Preview */}
+          <div style={styles.previewCard}>
+            <img src={image} style={styles.mainImage} alt="Source" />
+          </div>
+
+          {/* Palette Grid */}
+          <div style={styles.paletteGrid}>
+            {loading ? (
+              <div style={styles.loader}>Generating palette...</div>
+            ) : error ? (
+              <div style={styles.error}>{error}</div>
+            ) : (
+              palette.map((color, i) => (
+                <div
+                  key={i}
+                  style={{ ...styles.swatch, backgroundColor: color }}
+                  onClick={() => navigator.clipboard.writeText(color)}
+                >
+                  <span
+                    style={{
+                      ...styles.colorLabel,
+                      color: getContrastText(color),
+                    }}
+                  >
+                    {color.toUpperCase()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "100-vh",
-    backgroundColor: "#f8fafc",
-    color: "#1e293b",
-    padding: "40px 20px",
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    minHeight: "100vh",
+    backgroundColor: "#09090b",
+    color: "#fafafa",
+    padding: "60px 20px",
+    fontFamily: "Inter, system-ui, sans-serif",
+  },
+  wrapper: {
+    maxWidth: "800px",
+    margin: "0 auto",
   },
   header: {
     textAlign: "center" as const,
-    marginBottom: "40px",
+    marginBottom: "48px",
   },
   title: {
-    fontSize: "2.5rem",
-    fontWeight: 800,
-    margin: 0,
-    color: "#0f172a",
-    letterSpacing: "-0.025em",
+    fontSize: "2rem",
+    fontWeight: 700,
+    letterSpacing: "-0.05em",
+    margin: "0 0 8px 0",
   },
   subtitle: {
-    fontSize: "1.1rem",
-    color: "#64748b",
-    marginTop: "8px",
-  },
-  main: {
-    maxWidth: "1000px",
-    margin: "0 auto",
-  },
-  uploadSection: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    marginBottom: "32px",
-    gap: "8px",
-  },
-  uploadLabel: {
-    backgroundColor: "#2563eb",
-    color: "white",
-    padding: "10px 24px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: 600,
-    transition: "background-color 0.2s",
-  },
-  hiddenInput: {
-    display: "none",
-  },
-  uploadNote: {
-    fontSize: "0.85rem",
-    color: "#94a3b8",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-    gap: "24px",
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: "16px",
-    boxShadow:
-      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    overflow: "hidden",
-    border: "1px solid #e2e8f0",
-  },
-  cardHeader: {
-    padding: "16px 20px",
-    borderBottom: "1px solid #e2e8f0",
-    fontWeight: 600,
+    color: "#a1a1aa",
     fontSize: "0.95rem",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    color: "#64748b",
   },
-  imageWrapper: {
-    padding: "20px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f1f5f9",
-  },
-  image: {
-    maxWidth: "100%",
-    maxHeight: "400px",
-    borderRadius: "8px",
-    display: "block",
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-  },
-  paletteContent: {
-    padding: "20px",
-  },
-  list: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "12px",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    gap: "16px",
-    padding: "8px",
-    borderRadius: "12px",
-    border: "1px solid #f1f5f9",
-    transition: "background-color 0.2s",
-  },
-  swatch: {
-    width: "56px",
-    height: "56px",
-    borderRadius: "10px",
-    boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.05)",
-  },
-  colorInfo: {
-    flex: 1,
+  toolbar: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "#18181b",
+    padding: "16px 24px",
+    borderRadius: "12px",
+    border: "1px solid #27272a",
+    marginBottom: "24px",
+    gap: "20px",
+    flexWrap: "wrap" as const,
   },
-  code: {
-    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    color: "#334155",
+  controlGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   },
-  copyBtn: {
-    padding: "6px 12px",
-    fontSize: "0.75rem",
-    borderRadius: "6px",
-    border: "1px solid #e2e8f0",
-    backgroundColor: "transparent",
-    cursor: "pointer",
+  label: {
+    fontSize: "0.875rem",
     fontWeight: 500,
-    color: "#64748b",
+    minWidth: "80px",
   },
-  status: {
+  range: {
+    cursor: "pointer",
+    accentColor: "#fafafa",
+  },
+  actionGroup: {
+    display: "flex",
+    gap: "12px",
+  },
+  primaryBtn: {
+    backgroundColor: "#fafafa",
+    color: "#18181b",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    fontSize: "0.875rem",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  secondaryBtn: {
+    backgroundColor: "transparent",
+    color: "#fafafa",
+    border: "1px solid #27272a",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    cursor: "pointer",
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "24px",
+  },
+  previewCard: {
+    width: "100%",
+    borderRadius: "12px",
+    overflow: "hidden",
+    border: "1px solid #27272a",
+    backgroundColor: "#18181b",
+    lineHeight: 0,
+  },
+  mainImage: {
+    width: "100%",
+    height: "auto",
+    maxHeight: "500px",
+    objectFit: "contain" as const,
+  },
+  paletteGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+    gap: "12px",
+  },
+  swatch: {
+    height: "100px",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "copy",
+    transition: "transform 0.1s ease",
+    border: "1px solid rgba(255,255,255,0.1)",
+    position: "relative" as const,
+  },
+  colorLabel: {
+    fontSize: "0.75rem",
+    fontWeight: 700,
+    fontFamily: "monospace",
+    opacity: 0.8,
+  },
+  loader: {
+    gridColumn: "1 / -1",
     textAlign: "center" as const,
-    color: "#64748b",
-    padding: "40px 0",
+    padding: "40px",
+    color: "#a1a1aa",
   },
   error: {
-    color: "#ef4444",
+    gridColumn: "1 / -1",
     textAlign: "center" as const,
     padding: "20px",
-    backgroundColor: "#fef2f2",
+    color: "#f87171",
+    backgroundColor: "rgba(248, 113, 113, 0.1)",
     borderRadius: "8px",
   },
 };
