@@ -1,0 +1,40 @@
+{
+  "name": "pixelpalette",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "scripts": {
+    "types": "tsc --emitDeclarationOnly",
+    "build": "bun build ./src/index.ts --outdir dist --target browser --minify --external react --external react-dom && bun run types"
+  },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "colors",
+    "palette",
+    "image",
+    "dominant-colors"
+  ],
+  "dependencies": {
+    "@types/react": "^19.2.7"
+  }
+}
