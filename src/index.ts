@@ -1,2 +1,2 @@
-export * from "./extractColors";
-export * from "./usePixelColors";
+export { extractColors, kMeans } from "./extractColors";
+export { usePixelColors } from "./usePixelColors";
