@@ -1,10 +1,13 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "pixel-colors": ["../src/index.ts"],
+    },
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" },
   ],
-  "paths": {
-    "pixel-colors": ["../src/index.ts"],
-  },
 }

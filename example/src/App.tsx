@@ -5,7 +5,7 @@ export default function App() {
   const [image, setImage] = useState<string>(
     "https://picsum.photos/seed/nature/1200/800",
   );
-  const { palette, loading, error } = usePixelColors(image, 6);
+  const { palette, loading, error } = usePixelColors(image, 1);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
