@@ -1,2 +1,2 @@
 export * from "./extractColors";
-export * from "./usePixelPalette";
+export * from "./usePixelColors";
