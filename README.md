@@ -20,9 +20,9 @@ A high-performance, deterministic color extraction library for React. Use K-Mean
 ## Installation
 
 ```bash
-bun add pixelpalette
+bun add pixel-colors
 # or
-npm install pixelpalette
+npm install pixel-colors
 ```
 
 ---
@@ -31,13 +31,13 @@ npm install pixelpalette
 
 ### Basic Example
 
-The \`usePixelPalette\` hook handles image loading, canvas drawing, and color clustering in a single line.
+The \`usePixelColors\` hook handles image loading, canvas drawing, and color clustering in a single line.
 
 ```tsx
-import { usePixelPalette } from "pixelpalette";
+import { usePixelColors } from "pixel-colors";
 
 function ProfileCard({ userImage }) {
-  const { palette, loading, error } = usePixelPalette(userImage, 5);
+  const { palette, loading, error } = usePixelColors(userImage, 5);
 
   if (loading) return <SkeletonPalette />;
 

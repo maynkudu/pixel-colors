@@ -1,5 +1,5 @@
 {
-  "name": "pixelpalette",
+  "name": "pixel-colors",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",

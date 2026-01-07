@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { extractColors } from "./extractColors";
 
-export function usePixelPalette(src: string, count = 4) {
+export function usePixelColors(src: string, count = 4) {
   const [palette, setPalette] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
