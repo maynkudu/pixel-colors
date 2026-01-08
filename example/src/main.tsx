@@ -15,7 +15,6 @@ const MainApp = () => (
   </StrictMode>
 );
 
-// If the container has children, it was prerendered. Use hydration.
 if (container.hasChildNodes()) {
   hydrateRoot(container, <MainApp />);
 } else {
@@ -38,6 +37,10 @@ export function SEO() {
       <meta property="og:image" content="/pixel-colors/og-preview.png" />
       <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary_large_image" />
+      <meta
+        name="twitter:description"
+        content="Professional image color palette generator. Extract visual DNA in HEX, RGB, and OKLCH."
+      />
       <link rel="canonical" href="https://maynkudu.github.io/pixel-colors/" />
     </Helmet>
   );

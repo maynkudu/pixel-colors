@@ -47,6 +47,12 @@ export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [copied, setCopied] = useState(false);
 
+  // useEffect(() => {
+  //   // Check if we are in a Puppeteer/Prerender environment
+  //   // or just fire it anyway (it's harmless in a normal browser)
+  //   document.dispatchEvent(new Event("custom-render-trigger"));
+  // }, []);
+
   useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
