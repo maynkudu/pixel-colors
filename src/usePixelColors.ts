@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
-import { extractColors } from "./extractColors";
+import { extractColors, type RGB } from "./extractColors";
+import { rgbToHex, rgbToOklch } from "./utils";
 
-export function usePixelColors(src: string, count = 4) {
+export type ColorFormat = "rgb" | "hex" | "oklch";
+
+interface Options {
+  format?: ColorFormat;
+}
+
+export function usePixelColors(src: string, count = 4, options: Options = {}) {
   const [palette, setPalette] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,19 +18,33 @@ export function usePixelColors(src: string, count = 4) {
 
     let isMounted = true;
     setLoading(true);
+    setError(null); // Reset error on new source
 
     const img = new Image();
-    img.crossOrigin = "Anonymous"; // Crucial for reading canvas data
+    img.crossOrigin = "Anonymous";
     img.src = src;
 
     img.onload = () => {
       if (!isMounted) return;
       try {
-        const colors = extractColors(img, count);
-        setPalette(colors);
+        // 1. Extract raw [r, g, b] arrays from the image
+        const rawColors: RGB[] = extractColors(img, count);
+
+        // 2. Format them based on user preference
+        const formatted = rawColors.map(([r, g, b]) => {
+          switch (options.format) {
+            case "hex":
+              return rgbToHex(r, g, b);
+            case "oklch":
+              return rgbToOklch(r, g, b);
+            default:
+              return `rgb(${r}, ${g}, ${b})`;
+          }
+        });
+
+        setPalette(formatted);
         setLoading(false);
       } catch (err) {
-        console.error(err);
         setError("Failed to extract colors");
         setLoading(false);
       }
@@ -38,7 +59,9 @@ export function usePixelColors(src: string, count = 4) {
     return () => {
       isMounted = false;
     };
-  }, [src, count]);
+    // Add options.format to the dependency array so the palette
+    // updates instantly when the user toggles the format!
+  }, [src, count, options.format]);
 
   return { palette, loading, error };
 }

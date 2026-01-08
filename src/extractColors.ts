@@ -1,4 +1,4 @@
-type RGB = [number, number, number];
+export type RGB = [number, number, number];
 
 function distanceSq(a: RGB, b: RGB): number {
   return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
@@ -8,6 +8,9 @@ export function kMeans(points: RGB[], k: number, maxIterations = 10): RGB[] {
   if (points.length === 0) return Array.from({ length: k }, () => [0, 0, 0]);
 
   let centroids: RGB[] = [];
+
+  // Keep track of counts for the very last iteration
+  let finalCounts: number[] = new Array(k).fill(0);
 
   // 1. Safe Initialization
   if (points.length < k) {
@@ -58,6 +61,9 @@ export function kMeans(points: RGB[], k: number, maxIterations = 10): RGB[] {
       }
     }
 
+    // Capture counts for the final sorting later
+    finalCounts = [...counts];
+
     // Update Step
     let converged = true;
     for (let j = 0; j < k; j++) {
@@ -82,10 +88,14 @@ export function kMeans(points: RGB[], k: number, maxIterations = 10): RGB[] {
     if (converged) break;
   }
 
-  return centroids;
+  // Combine centroids and counts into objects, sort them, and return the RGBs
+  return centroids
+    .map((color, index) => ({ color, count: finalCounts[index] || 0 }))
+    .sort((a, b) => b.count - a.count) // Descending order
+    .map((item) => item.color);
 }
 
-export function extractColors(img: HTMLImageElement, k = 4): string[] {
+export function extractColors(img: HTMLImageElement, k = 4): RGB[] {
   if (typeof window === "undefined" || typeof document === "undefined")
     return [];
 
@@ -127,5 +137,5 @@ export function extractColors(img: HTMLImageElement, k = 4): string[] {
     }
   }
 
-  return kMeans(points, k).map(([r, g, b]) => `rgb(${r}, ${g}, ${b})`);
+  return kMeans(points, k);
 }
