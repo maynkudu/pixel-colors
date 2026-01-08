@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://maynkudu.github.io/pixel-colors/sitemap.xml
