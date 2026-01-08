@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/",
+  base: "/pixel-colors",
   resolve: {
     alias: {
       "pixel-colors": path.resolve(__dirname, "../src/index.ts"),
